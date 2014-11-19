@@ -31,6 +31,8 @@
 #include "gc.h"
 #include "chacon_al.h"
 
+#define CHACON_AL_PULSE_LOW 3
+
 /**
  * Creates as System message informing the daemon about a received or created message
  *
@@ -91,7 +93,7 @@ static void chaconALParseCode(void) {
 }
 
 /**
- * Creates a number of "low" entries (500 1500). Note that each entry requires 2 raw positions
+ * Creates a number of "low" entries (450 1500). Note that each entry requires 2 raw positions
  * so e-s should be a multiple of 2
  * s : start position in the raw code (inclusive)
  * e : end position in the raw code (inclusive)
@@ -100,13 +102,13 @@ static void chaconALCreateLow(int s, int e) {
 	int i;
 
 	for(i=s;i<=e;i+=2) {
-		chacon_al->raw[i]=(chacon_al->plslen->length);
+		chacon_al->raw[i]=(CHACON_AL_PULSE_LOW*chacon_al->plslen->length);
 		chacon_al->raw[i+1]=(chacon_al->pulse*chacon_al->plslen->length);
 	}
 }
 
 /**
- * Creates a number of "high" entries (1500 500). Note that each entry requires 2 raw positions
+ * Creates a number of "high" entries (1500 450). Note that each entry requires 2 raw positions
  * so e-s should be a multiple of 2
  * s : start position in the raw code (inclusive)
  * e : end position in the raw code (inclusive)
@@ -116,7 +118,7 @@ static void chaconALCreateHigh(int s, int e) {
 
 	for(i=s;i<=e;i+=2) {
 		chacon_al->raw[i]=(chacon_al->pulse*chacon_al->plslen->length);
-		chacon_al->raw[i+1]=(chacon_al->plslen->length);
+		chacon_al->raw[i+1]=(CHACON_AL_PULSE_LOW*chacon_al->plslen->length);
 	}
 }
 
@@ -192,8 +194,8 @@ static void chaconALCreateState(int state) {
  * 
  */
 static void chaconALCreateFooter(void) {
-	chacon_al->raw[64]=(chacon_al->plslen->length);
-	chacon_al->raw[65]=(CHACON_AL_PULSE_DIV*chacon_al->plslen->length);
+	chacon_al->raw[64]=(CHACON_AL_PULSE_LOW*chacon_al->plslen->length);
+	chacon_al->raw[65]=(PULSE_DIV*chacon_al->plslen->length);
 }
 
 
@@ -280,10 +282,10 @@ void chaconALInit(void) {
 	protocol_register(&chacon_al);
 	protocol_set_id(chacon_al, "chacon_al");
 	protocol_device_add(chacon_al, "chacon_al", "Chacon Alarm System");
-	protocol_plslen_add(chacon_al, 500);
+	protocol_plslen_add(chacon_al, 150);
 	chacon_al->devtype = SWITCH;
 	chacon_al->hwtype = RF433;
-	chacon_al->pulse = 3;
+	chacon_al->pulse = 10;
 	chacon_al->rawlen = 66;
 
 	options_add(&chacon_al->options, 'u', "unitcode", OPTION_HAS_VALUE, CONFIG_ID, JSON_NUMBER, NULL, "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]|[01]{16})$");
