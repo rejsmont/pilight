@@ -487,6 +487,8 @@ void *receive_parse_code(void *param) {
 				protocol = pnode->listener;
 				match = 0;
 
+                logprintf(LOG_DEBUG, "recevied pulse length of %d", recvqueue->plslen);
+                
 				if((protocol->hwtype == recvqueue->hwtype || protocol->hwtype == -1 || recvqueue->hwtype == -1) &&
 				   ((((protocol->parseRaw || protocol->parseCode) &&
 					  (protocol->rawlen > 0 || (protocol->minrawlen > 0 && protocol->maxrawlen > 0)))
