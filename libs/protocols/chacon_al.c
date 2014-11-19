@@ -204,7 +204,6 @@ static void chaconALCreateFooter(void) {
  * returns : EXIT_SUCCESS or EXIT_FAILURE on obvious occasions
  */
 static int chaconALCreateCode(JsonNode *code) {
-    int i;
 	int unitcode = -1;
 	int state = -1;
     int checksum = -1;
